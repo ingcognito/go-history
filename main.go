@@ -40,7 +40,7 @@ func readHistFile() {
 	defer file.Close()
 
 	var lines []string
-	var git int
+	uniqueWordCounters := make([]uniqueWordCounter, 0)
 
 	scanner := bufio.NewScanner(file)
 	scanner.Split(bufio.ScanLines)
@@ -48,38 +48,43 @@ func readHistFile() {
 	for scanner.Scan() {
 		lines = append(lines, scanner.Text())
 	}
-	//this allows to read the lines, line by line, this is a ghetto analyzer but can pump out stats
-	uniqueWordCounters := make([]uniqueWordCounter, 0)
-	fmt.Println("read lines:")
+
 	for _, line := range lines {
 		words := strings.Split(line, " ")
-		for _, word := range words {
+
+		for index, word := range words {
 			found := false
 
+			//Excluding histfile line number
+			if index == 1 || word == " " {
+				//For the histfile
+				found = true
+				continue
+			}
+
 			for _, uwc := range uniqueWordCounters {
+
 				if uwc.uniqueWord == word {
+					//fmt.Println(uwc.uniqueWord, " = ", word)
 					uwc.counter++
+					//fmt.Println("what is uwc here: ", uwc)
 					found = true
 				}
-			}
-			if !found {
-				uniqueWordCounters = append(uniqueWordCounters, uniqueWordCounter{uniqueWord: word, counter: 1})
+
 			}
 
-		}
+			if found == false {
+				newUWC := uniqueWordCounter{uniqueWord: word, counter: 1}
+				uniqueWordCounters = append(uniqueWordCounters, newUWC)
+			} //else {
+			//fmt.Println("else is being hit")
+			//}
 
-		if strings.Contains(line, "git") {
-			git++
 		}
 	}
-	fmt.Println("there are this many lines:", len(lines))
-	fmt.Println("first line: ", lines[0])
-	fmt.Println("you used git this many times: ", git)
-	fmt.Println(uniqueWordCounters)
-	// most used binary
-	// most used languages
-	// date of of first terminal usage
-	//
+
+	fmt.Println("Results: ", uniqueWordCounters)
+
 }
 
 func check(e error) {
