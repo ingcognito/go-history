@@ -12,6 +12,11 @@ type histFile struct {
 	commands string
 }
 
+type uniqueWordCounter struct {
+	uniqueWord string
+	counter    int
+}
+
 func main() {
 	fmt.Printf("hello world")
 	readHistFile()
@@ -44,8 +49,25 @@ func readHistFile() {
 		lines = append(lines, scanner.Text())
 	}
 	//this allows to read the lines, line by line, this is a ghetto analyzer but can pump out stats
+	uniqueWordCounters := make([]uniqueWordCounter, 0)
 	fmt.Println("read lines:")
 	for _, line := range lines {
+		words := strings.Split(line, " ")
+		for _, word := range words {
+			found := false
+
+			for _, uwc := range uniqueWordCounters {
+				if uwc.uniqueWord == word {
+					uwc.counter++
+					found = true
+				}
+			}
+			if !found {
+				uniqueWordCounters = append(uniqueWordCounters, uniqueWordCounter{uniqueWord: word, counter: 1})
+			}
+
+		}
+
 		if strings.Contains(line, "git") {
 			git++
 		}
@@ -53,6 +75,7 @@ func readHistFile() {
 	fmt.Println("there are this many lines:", len(lines))
 	fmt.Println("first line: ", lines[0])
 	fmt.Println("you used git this many times: ", git)
+	fmt.Println(uniqueWordCounters)
 	// most used binary
 	// most used languages
 	// date of of first terminal usage
