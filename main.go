@@ -62,11 +62,11 @@ func readHistFile() {
 				continue
 			}
 
-			for _, uwc := range uniqueWordCounters {
+			for index, uwc := range uniqueWordCounters {
 
 				if uwc.uniqueWord == word {
 					//fmt.Println(uwc.uniqueWord, " = ", word)
-					uwc.counter++
+					uniqueWordCounters[index].counter++
 					//fmt.Println("what is uwc here: ", uwc)
 					found = true
 				}
@@ -76,14 +76,13 @@ func readHistFile() {
 			if found == false {
 				newUWC := uniqueWordCounter{uniqueWord: word, counter: 1}
 				uniqueWordCounters = append(uniqueWordCounters, newUWC)
-			} //else {
-			//fmt.Println("else is being hit")
-			//}
-
+			}
 		}
 	}
 
-	fmt.Println("Results: ", uniqueWordCounters)
+	for _, uwc := range uniqueWordCounters {
+		fmt.Println(uwc)
+	}
 
 }
 
