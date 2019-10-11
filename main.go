@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"sort"
 	"strings"
 )
 
@@ -26,7 +27,7 @@ func getHistFile() {
 	//Get Histfile by using environment variable
 	//Allow user to enter their own histfile they would like analyzed
 
-	histfile, err := os.Open("./hist.txt")
+	histfile, err := os.Open("./hist1.txt")
 	check(err)
 	defer histfile.Close()
 	fmt.Println("file successfully opened", histfile)
@@ -35,7 +36,10 @@ func getHistFile() {
 
 func readHistFile() {
 
-	file, err := os.Open("./hist.txt")
+	//look into NLP
+	//Provide insights into most used binaries
+
+	file, err := os.Open("./hist1.txt")
 	check(err)
 	defer file.Close()
 
@@ -51,22 +55,20 @@ func readHistFile() {
 
 	for _, line := range lines {
 		words := strings.Split(line, " ")
-
-		for index, word := range words {
+		for indexword, word := range words {
 			found := false
 
 			//Excluding histfile line number
-			if index == 1 || word == " " {
-				//For the histfile
+			if indexword == 1 || word == " " || word == "" {
 				found = true
 				continue
 			}
 
-			for index, uwc := range uniqueWordCounters {
+			for indexuwc, uwc := range uniqueWordCounters {
 
 				if uwc.uniqueWord == word {
 					//fmt.Println(uwc.uniqueWord, " = ", word)
-					uniqueWordCounters[index].counter++
+					uniqueWordCounters[indexuwc].counter++
 					//fmt.Println("what is uwc here: ", uwc)
 					found = true
 				}
@@ -79,6 +81,8 @@ func readHistFile() {
 			}
 		}
 	}
+
+	sort.Slice(uniqueWordCounters, func(i, j int) bool { return uniqueWordCounters[i].counter < uniqueWordCounters[j].counter })
 
 	for _, uwc := range uniqueWordCounters {
 		fmt.Println(uwc)
